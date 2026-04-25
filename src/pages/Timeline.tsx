@@ -33,7 +33,7 @@ export const Timeline: React.FC = () => {
           >
             {/* Timeline dot */}
             <span className="absolute -left-[35px] md:-left-[43px] flex h-6 w-6 items-center justify-center rounded-full bg-white dark:bg-neutral-900 border-4 border-primary ring-4 ring-white dark:ring-neutral-900"></span>
-            
+
             <div className="bg-white dark:bg-neutral-800 rounded-xl shadow-sm border border-neutral-200 dark:border-neutral-700 p-6 hover:shadow-md transition-shadow">
               <div className="flex items-center gap-2 mb-2 text-primary font-semibold">
                 <Calendar className="w-4 h-4" />
@@ -45,7 +45,7 @@ export const Timeline: React.FC = () => {
               <p className="text-neutral-600 dark:text-neutral-300">
                 {event.description}
               </p>
-              
+
               {event.alert && (
                 <div className="mt-4 flex items-start gap-2 text-sm text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/20 p-3 rounded-lg">
                   <AlertCircle className="w-5 h-5 flex-shrink-0" />

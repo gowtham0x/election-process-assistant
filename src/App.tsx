@@ -6,7 +6,13 @@ import { ErrorBoundary } from './components/ErrorBoundary';
 const Home = lazy(() => import('./pages/Home').then(m => ({ default: m.Home })));
 const Process = lazy(() => import('./pages/Process').then(m => ({ default: m.Process })));
 const Timeline = lazy(() => import('./pages/Timeline').then(m => ({ default: m.Timeline })));
-const Resources = lazy(() => import('./pages/Resources').then(m => ({ default: m.Resources })));
+const Resources = lazy(() => import('./pages/Resources').then(module => ({ default: module.Resources })));
+
+const Loader = () => (
+  <div className="flex items-center justify-center min-h-[50vh]">
+    <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+  </div>
+);
 
 function App() {
   return (
@@ -19,7 +25,7 @@ function App() {
           </header>
           
           <main id="main-content" className="flex-grow bg-white dark:bg-neutral-900 transition-colors pt-16">
-            <Suspense fallback={<div className="flex items-center justify-center h-64 text-neutral-500">Loading...</div>}>
+            <Suspense fallback={<Loader />}>
               <Routes>
                 <Route path="/" element={<Home />} />
                 <Route path="/process" element={<Process />} />

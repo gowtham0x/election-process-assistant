@@ -2,11 +2,11 @@
 
 An interactive, accessible, and highly-optimized web application designed to guide users through the U.S. election process. This project explicitly satisfies rigorous standards for code quality, security, efficiency, testing, and accessibility.
 
-## Google Services Used
-- Firebase Firestore (real-time pledge wall)
-- Firebase Hosting (deployment)
+### Google Services Used
 
-**Where to find the code:**
+1.  **Google Firebase Firestore**: Used to power the real-time "Voter Pledge Wall" on the Resources page, letting users publicly pledge to vote and instantly see other pledges.
+2.  **Google Gemini AI**: Used to power the "Ask AI about Elections" chatbot on the Resources page, providing users with instant, real-time answers to any election-related questions.
+3.  **Google Firebase Hosting**: Used to host and deploy the production-ready application to the web securely and with high performance.
 * **`src/firebase.ts`**: Contains the Firebase initialization and configuration logic.
 * **`src/pages/Resources.tsx`**: Contains the React hooks (`useEffect`, `onSnapshot`, `addDoc`) that interact directly with the Firestore database to create the live pledge wall.
 

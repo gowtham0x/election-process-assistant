@@ -1,14 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Search, MapPin, ExternalLink, HelpCircle, Users, Send, Loader2, AlertCircle } from 'lucide-react';
+import { Search, MapPin, ExternalLink, HelpCircle, Users, Send, Loader2, AlertCircle, Bot } from 'lucide-react';
 import { collection, addDoc, onSnapshot, query, orderBy, limit, serverTimestamp } from 'firebase/firestore';
 import { db } from '../firebase';
+import { GoogleGenAI } from '@google/genai';
+import { faqs } from '../data/faqs';
+
+const ai = new GoogleGenAI({ apiKey: import.meta.env.VITE_GEMINI_API_KEY });
 
 /**
  * Resources Component
  * 
- * Provides external voter resources, frequently asked questions, and a Firebase-powered
- * "Voter Pledge Wall" where users can publicly commit to voting.
+ * Provides external voter resources, frequently asked questions, a Firebase-powered
+ * "Voter Pledge Wall" where users can publicly commit to voting, and an AI Chatbot powered by Gemini.
  */
 export const Resources: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -20,6 +24,12 @@ export const Resources: React.FC = () => {
   const [pledgeError, setPledgeError] = useState('');
   const [pledges, setPledges] = useState<any[]>([]);
   const [pledgeSuccess, setPledgeSuccess] = useState(false);
+
+  // Gemini AI State
+  const [aiPrompt, setAiPrompt] = useState('');
+  const [aiResponse, setAiResponse] = useState('');
+  const [isAsking, setIsAsking] = useState(false);
+  const [aiError, setAiError] = useState('');
 
   const filteredFaqs = faqs.filter(faq => 
     faq.question.toLowerCase().includes(searchQuery.toLowerCase()) || 
@@ -76,6 +86,28 @@ export const Resources: React.FC = () => {
     }
   };
 
+  const handleAiSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!aiPrompt.trim()) return;
+    
+    setIsAsking(true);
+    setAiError('');
+    setAiResponse('');
+
+    try {
+      const response = await ai.models.generateContent({
+        model: 'gemini-2.5-flash',
+        contents: `You are a helpful and neutral assistant focused solely on United States election processes. Answer the following question accurately and concisely: ${aiPrompt}`,
+      });
+      setAiResponse(response.text || 'I could not generate an answer.');
+    } catch (error) {
+      console.error('AI Error:', error);
+      setAiError('Failed to connect to Ask AI. Please ensure your Gemini API key is correct.');
+    } finally {
+      setIsAsking(false);
+    }
+  };
+
   return (
     <div className="max-w-5xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
       <div className="text-center mb-16">
@@ -116,6 +148,73 @@ export const Resources: React.FC = () => {
           </motion.a>
         ))}
       </div>
+
+      {/* Ask AI about Elections */}
+      <section className="mb-16 bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-indigo-900/20 dark:to-purple-900/20 rounded-3xl p-8 border border-indigo-100 dark:border-indigo-800" aria-labelledby="ai-chat-heading">
+        <div className="flex items-center gap-3 mb-6">
+          <div className="p-3 bg-indigo-600 text-white rounded-xl shadow-sm">
+            <Bot className="w-6 h-6" aria-hidden="true" />
+          </div>
+          <div>
+            <h2 id="ai-chat-heading" className="text-2xl font-bold text-neutral-900 dark:text-neutral-100">
+              Ask AI about Elections
+            </h2>
+            <p className="text-sm text-neutral-600 dark:text-neutral-400">Powered by Google Gemini AI</p>
+          </div>
+        </div>
+
+        <div className="bg-white dark:bg-neutral-900 rounded-2xl p-6 shadow-sm border border-neutral-200 dark:border-neutral-800">
+          <form onSubmit={handleAiSubmit} className="space-y-4">
+            <div>
+              <label htmlFor="ai-prompt" className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
+                What would you like to know about the election process?
+              </label>
+              <div className="flex gap-4">
+                <input
+                  id="ai-prompt"
+                  type="text"
+                  className="flex-grow px-4 py-3 rounded-lg border border-neutral-300 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all"
+                  placeholder="e.g., How does the electoral college work?"
+                  value={aiPrompt}
+                  onChange={(e) => setAiPrompt(e.target.value)}
+                  disabled={isAsking}
+                  required
+                />
+                <button
+                  type="submit"
+                  disabled={isAsking || !aiPrompt.trim()}
+                  className="px-6 py-3 bg-indigo-600 text-white rounded-lg font-medium hover:bg-indigo-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 flex-shrink-0"
+                >
+                  {isAsking ? <Loader2 className="w-5 h-5 animate-spin" /> : <Send className="w-5 h-5" />}
+                  <span className="hidden sm:inline">Ask</span>
+                </button>
+              </div>
+            </div>
+          </form>
+
+          {aiError && (
+            <div className="mt-4 p-4 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400 rounded-lg flex items-start gap-3" role="alert">
+              <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5" />
+              <p className="text-sm">{aiError}</p>
+            </div>
+          )}
+
+          {aiResponse && (
+            <motion.div 
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mt-6 p-6 bg-neutral-50 dark:bg-neutral-800 rounded-xl border border-neutral-100 dark:border-neutral-700"
+            >
+              <div className="flex items-start gap-3">
+                <Bot className="w-6 h-6 text-indigo-600 mt-1 flex-shrink-0" />
+                <div className="prose prose-sm dark:prose-invert max-w-none">
+                  {aiResponse}
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </div>
+      </section>
 
       {/* Firebase Voter Pledge Wall */}
       <section className="mb-16 bg-gradient-to-br from-primary/5 to-primary/10 dark:from-primary/10 dark:to-primary/20 rounded-3xl p-8 border border-primary/20" aria-labelledby="pledge-wall-heading">
@@ -294,28 +393,5 @@ const resourceLinks = [
     url: "https://www.vote.org/polling-place-locator/",
     color: "text-green-600 dark:text-green-400",
     bgColor: "bg-green-100 dark:bg-green-900/30"
-  }
-];
-
-const faqs = [
-  {
-    question: "Do I need an ID to vote?",
-    answer: "Voter ID laws vary by state. About two-thirds of states require voters to show some form of identification at the polls. Check your specific state's requirements before heading to vote."
-  },
-  {
-    question: "What if I can't make it to the polls on Election Day?",
-    answer: "Most states offer options for absentee voting or mail-in voting. You usually need to request a ballot in advance. Many states also offer early in-person voting."
-  },
-  {
-    question: "How does the Electoral College work?",
-    answer: "When you vote for President, you're actually voting for electors. A state has the same number of electors as it has members of Congress. To win the presidency, a candidate needs a majority of electoral votes (270 out of 538)."
-  },
-  {
-    question: "Can I vote if I have a criminal record?",
-    answer: "This depends entirely on your state. In some states, you never lose your right to vote. In others, your rights are restored after serving your sentence. A few states permanently disenfranchise people with certain convictions."
-  },
-  {
-    question: "What should I do if I move?",
-    answer: "You must update your voter registration with your new address. If you move out of state, you must register in your new state. Deadlines apply, so do this as soon as possible after moving."
   }
 ];

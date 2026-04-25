@@ -1,10 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Vote, Menu, X } from 'lucide-react';
 
-export const Navbar: React.FC = () => {
-  const [isOpen, setIsOpen] = React.useState(false);
+export const Navbar: React.FC = React.memo(() => {
+  const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
 
   const links = [
@@ -94,4 +94,4 @@ export const Navbar: React.FC = () => {
       )}
     </nav>
   );
-};
+});
