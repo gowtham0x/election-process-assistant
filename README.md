@@ -2,10 +2,9 @@
 
 An interactive, accessible, and highly-optimized web application designed to guide users through the U.S. election process. This project explicitly satisfies rigorous standards for code quality, security, efficiency, testing, and accessibility.
 
-## 🌟 Google Services Integration (Firebase)
-This project heavily utilizes **Google Firebase** to power a real-time "Voter Pledge Wall". 
-* **Firebase Firestore (`firebase/firestore`)**: Used to read and write real-time pledges from users.
-* **Firebase Hosting**: The application is fully deployed and hosted globally via Firebase Hosting.
+## Google Services Used
+- Firebase Firestore (real-time pledge wall)
+- Firebase Hosting (deployment)
 
 **Where to find the code:**
 * **`src/firebase.ts`**: Contains the Firebase initialization and configuration logic.

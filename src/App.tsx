@@ -1,10 +1,12 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
-import { Navbar } from './components/Navbar'
-import { Home } from './pages/Home'
-import { Process } from './pages/Process'
-import { Timeline } from './pages/Timeline'
-import { Resources } from './pages/Resources'
-import { ErrorBoundary } from './components/ErrorBoundary'
+import { lazy, Suspense } from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { Navbar } from './components/Navbar';
+import { ErrorBoundary } from './components/ErrorBoundary';
+
+const Home = lazy(() => import('./pages/Home').then(m => ({ default: m.Home })));
+const Process = lazy(() => import('./pages/Process').then(m => ({ default: m.Process })));
+const Timeline = lazy(() => import('./pages/Timeline').then(m => ({ default: m.Timeline })));
+const Resources = lazy(() => import('./pages/Resources').then(m => ({ default: m.Resources })));
 
 function App() {
   return (
@@ -16,13 +18,15 @@ function App() {
             <Navbar />
           </header>
           
-          <main className="flex-grow" id="main-content" role="main">
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/process" element={<Process />} />
-              <Route path="/timeline" element={<Timeline />} />
-              <Route path="/resources" element={<Resources />} />
-            </Routes>
+          <main id="main-content" className="flex-grow bg-white dark:bg-neutral-900 transition-colors pt-16">
+            <Suspense fallback={<div className="flex items-center justify-center h-64 text-neutral-500">Loading...</div>}>
+              <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/process" element={<Process />} />
+                <Route path="/timeline" element={<Timeline />} />
+                <Route path="/resources" element={<Resources />} />
+              </Routes>
+            </Suspense>
           </main>
           
           {/* Simple Footer with Accessibility roles */}

@@ -3,13 +3,13 @@ import { getFirestore } from 'firebase/firestore';
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyB3we3VN8RNSOqc4Z4EB_DzUJIhhIEjDsY",
-  authDomain: "election-assistant-513e7.firebaseapp.com",
-  projectId: "election-assistant-513e7",
-  storageBucket: "election-assistant-513e7.firebasestorage.app",
-  messagingSenderId: "833064018775",
-  appId: "1:833064018775:web:97af92a740aa86820cd412",
-  measurementId: "G-DHXBGT9ZT6"
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
+  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID
 };
 
 // Initialize Firebase
