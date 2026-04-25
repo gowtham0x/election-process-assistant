@@ -8,6 +8,13 @@ import { faqs } from '../data/faqs';
 
 const ai = new GoogleGenAI({ apiKey: import.meta.env.VITE_GEMINI_API_KEY });
 
+interface Pledge {
+  id: string;
+  name: string;
+  state: string;
+  createdAt: unknown; // serverTimestamp returns FieldValue which evaluates differently
+}
+
 /**
  * Resources Component
  * 
@@ -22,7 +29,7 @@ export const Resources: React.FC = () => {
   const [pledgeState, setPledgeState] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [pledgeError, setPledgeError] = useState('');
-  const [pledges, setPledges] = useState<any[]>([]);
+  const [pledges, setPledges] = useState<Pledge[]>([]);
   const [pledgeSuccess, setPledgeSuccess] = useState(false);
 
   // Gemini AI State
@@ -41,9 +48,9 @@ export const Resources: React.FC = () => {
     try {
       const q = query(collection(db, 'pledges'), orderBy('createdAt', 'desc'), limit(5));
       const unsubscribe = onSnapshot(q, (querySnapshot) => {
-        const pledgesData: any[] = [];
+        const pledgesData: Pledge[] = [];
         querySnapshot.forEach((doc) => {
-          pledgesData.push({ id: doc.id, ...doc.data() });
+          pledgesData.push({ id: doc.id, name: doc.data().name, state: doc.data().state, createdAt: doc.data().createdAt });
         });
         setPledges(pledgesData);
       }, (error) => {
@@ -56,7 +63,7 @@ export const Resources: React.FC = () => {
       });
       
       return () => unsubscribe();
-    } catch (err) {
+    } catch {
       console.warn('Firebase initialization skipped.');
     }
   }, []);
@@ -78,7 +85,7 @@ export const Resources: React.FC = () => {
       setPledgeState('');
       setPledgeSuccess(true);
       setTimeout(() => setPledgeSuccess(false), 3000);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error adding document: ', error);
       setPledgeError('Failed to submit pledge. Please check your Firebase configuration.');
     } finally {
