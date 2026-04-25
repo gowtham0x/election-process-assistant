@@ -16,7 +16,7 @@ export const Home: React.FC = () => {
     <div className="flex flex-col min-h-screen">
       {/* Hero Section */}
       <section className="relative overflow-hidden bg-gradient-to-br from-primary to-primary/80 text-white py-20 px-4 sm:px-6 lg:px-8">
-        <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1540910419892-4a36d2c3266c?q=80&w=1080&auto=format&fit=crop')] bg-cover bg-center opacity-10 mix-blend-overlay"></div>
+          <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1540910419892-4a36d2c3266c?fm=webp&q=80&w=1080&auto=format&fit=crop')] bg-cover bg-center opacity-10 mix-blend-overlay"></div>
         <div className="max-w-7xl mx-auto relative z-10 flex flex-col items-center text-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}

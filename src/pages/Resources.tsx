@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Search, MapPin, ExternalLink, HelpCircle, Users, Send, Loader2, AlertCircle, Bot } from 'lucide-react';
-import { collection, addDoc, onSnapshot, query, orderBy, limit, serverTimestamp } from 'firebase/firestore';
+import { collection, addDoc, onSnapshot, query, orderBy, limit, serverTimestamp, FieldValue, Timestamp } from 'firebase/firestore';
 import { db } from '../firebase';
 import { GoogleGenAI } from '@google/genai';
 import { faqs } from '../data/faqs';
@@ -12,7 +12,7 @@ interface Pledge {
   id: string;
   name: string;
   state: string;
-  createdAt: unknown; // serverTimestamp returns FieldValue which evaluates differently
+  createdAt: FieldValue | Timestamp | null;
 }
 
 /**
@@ -57,8 +57,8 @@ export const Resources: React.FC = () => {
         console.warn('Firebase error (expected if config is missing/invalid):', error.message);
         // Fallback mock data if Firestore fails
         setPledges([
-          { id: '1', name: 'Alex', state: 'New York', createdAt: new Date() },
-          { id: '2', name: 'Jordan', state: 'Texas', createdAt: new Date() }
+          { id: '1', name: 'Alex', state: 'New York', createdAt: null },
+          { id: '2', name: 'Jordan', state: 'Texas', createdAt: null }
         ]);
       });
       

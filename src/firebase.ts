@@ -1,5 +1,6 @@
 import { initializeApp, getApps } from 'firebase/app';
 import { getFirestore } from 'firebase/firestore';
+import { getAnalytics } from 'firebase/analytics';
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -15,5 +16,14 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
 
+// Initialize Analytics
+let analytics;
+try {
+  analytics = getAnalytics(app);
+} catch {
+  console.warn("Analytics not initialized");
+}
+
 // Initialize Cloud Firestore and get a reference to the service
 export const db = getFirestore(app);
+export { analytics };
